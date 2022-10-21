@@ -1,0 +1,203 @@
+
+
+================================================================
+== Synthesis Summary Report of 'cholesky_kernel'
+================================================================
++ General Information: 
+    * Date:           Fri Oct 21 07:35:36 2022
+    * Version:        2022.1 (Build 3526262 on Mon Apr 18 15:47:01 MDT 2022)
+    * Project:        cholesky_kernel
+    * Solution:       solution (Vitis Kernel Flow Target)
+    * Product family: virtexuplus
+    * Target device:  xcu50-fsvh2104-2-e
+    
+
++ Performance & Resource Estimates: 
+    
+    PS: '+' for module; 'o' for loop; '*' for dataflow
+    +-------------------------------------------------------------+--------+-------+---------+--------+----------+---------+------+----------+----------+----------+------------+------------+-----+
+    |                           Modules                           |  Issue |       | Latency | Latency| Iteration|         | Trip |          |          |          |            |            |     |
+    |                           & Loops                           |  Type  | Slack | (cycles)|  (ns)  |  Latency | Interval| Count| Pipelined|   BRAM   |    DSP   |     FF     |     LUT    | URAM|
+    +-------------------------------------------------------------+--------+-------+---------+--------+----------+---------+------+----------+----------+----------+------------+------------+-----+
+    |+ cholesky_kernel                                            |  Timing|  -0.00|        -|       -|         -|        -|     -|        no|  16 (~0%)|  14 (~0%)|  3780 (~0%)|  5367 (~0%)|    -|
+    | + cholesky_kernel_Pipeline_VITIS_LOOP_32_1_VITIS_LOOP_33_2  |  Timing|  -0.00|        -|       -|         -|        -|     -|        no|         -|         -|   169 (~0%)|   332 (~0%)|    -|
+    |  o VITIS_LOOP_32_1_VITIS_LOOP_33_2                          |       -|   2.43|        -|       -|         3|        1|     -|       yes|         -|         -|           -|           -|    -|
+    | + cholesky_kernel_Pipeline_Loop_first_col                   |       -|   0.10|        -|       -|         -|        -|     -|        no|         -|         -|   197 (~0%)|   134 (~0%)|    -|
+    |  o Loop_first_col                                           |       -|   2.43|        -|       -|        15|        1|     -|       yes|         -|         -|           -|           -|    -|
+    | + cholesky_kernel_Pipeline_VITIS_LOOP_68_3_VITIS_LOOP_69_4  |  Timing|  -0.00|        -|       -|         -|        -|     -|        no|         -|         -|   184 (~0%)|   354 (~0%)|    -|
+    |  o VITIS_LOOP_68_3_VITIS_LOOP_69_4                          |       -|   2.43|        -|       -|         4|        1|     -|       yes|         -|         -|           -|           -|    -|
+    | o Loop_col                                                  |       -|   2.43|        -|       -|         -|        -|     -|        no|         -|         -|           -|           -|    -|
+    |  + cholesky_kernel_Pipeline_Loop_diag                       |       -|   0.09|        -|       -|         -|        -|     -|        no|         -|         -|   170 (~0%)|   196 (~0%)|    -|
+    |   o Loop_diag                                               |      II|   2.43|        -|       -|        14|        7|     -|       yes|         -|         -|           -|           -|    -|
+    |  o Loop_row                                                 |       -|   2.43|        -|       -|         -|        -|     -|        no|         -|         -|           -|           -|    -|
+    |   + cholesky_kernel_Pipeline_Loop_vec_mul                   |       -|   0.09|        -|       -|         -|        -|     -|        no|         -|         -|   202 (~0%)|   221 (~0%)|    -|
+    |    o Loop_vec_mul                                           |      II|   2.43|        -|       -|        14|        7|     -|       yes|         -|         -|           -|           -|    -|
+    +-------------------------------------------------------------+--------+-------+---------+--------+----------+---------+------+----------+----------+----------+------------+------------+-----+
+
+
+================================================================
+== HW Interfaces
+================================================================
+* M_AXI
++-------------+------------+---------------+---------+--------+----------+-----------+--------------+--------------+-------------+-------------+
+| Interface   | Data Width | Address Width | Latency | Offset | Register | Max Widen | Max Read     | Max Write    | Num Read    | Num Write   |
+|             | (SW->HW)   |               |         |        |          | Bitwidth  | Burst Length | Burst Length | Outstanding | Outstanding |
++-------------+------------+---------------+---------+--------+----------+-----------+--------------+--------------+-------------+-------------+
+| m_axi_gmem0 | 32 -> 32   | 64            | 64      | slave  | 0        | 512       | 64           | 64           | 16          | 16          |
++-------------+------------+---------------+---------+--------+----------+-----------+--------------+--------------+-------------+-------------+
+
+* S_AXILITE Interfaces
++---------------+------------+---------------+--------+----------+
+| Interface     | Data Width | Address Width | Offset | Register |
++---------------+------------+---------------+--------+----------+
+| s_axi_control | 32         | 6             | 16     | 0        |
++---------------+------------+---------------+--------+----------+
+
+* S_AXILITE Registers
++---------------+-----------+--------+-------+--------+----------------------------------+------------------------------------------------------------------------------------+
+| Interface     | Register  | Offset | Width | Access | Description                      | Bit Fields                                                                         |
++---------------+-----------+--------+-------+--------+----------------------------------+------------------------------------------------------------------------------------+
+| s_axi_control | CTRL      | 0x00   | 32    | RW     | Control signals                  | 0=AP_START 1=AP_DONE 2=AP_IDLE 3=AP_READY 4=AP_CONTINUE 7=AUTO_RESTART 9=INTERRUPT |
+| s_axi_control | GIER      | 0x04   | 32    | RW     | Global Interrupt Enable Register | 0=Enable                                                                           |
+| s_axi_control | IP_IER    | 0x08   | 32    | RW     | IP Interrupt Enable Register     | 0=CHAN0_INT_EN 1=CHAN1_INT_EN                                                      |
+| s_axi_control | IP_ISR    | 0x0c   | 32    | RW     | IP Interrupt Status Register     | 0=CHAN0_INT_ST 1=CHAN1_INT_ST                                                      |
+| s_axi_control | diagSize  | 0x10   | 32    | W      | Data signal of diagSize          |                                                                                    |
+| s_axi_control | matrixA_1 | 0x18   | 32    | W      | Data signal of matrixA           |                                                                                    |
+| s_axi_control | matrixA_2 | 0x1c   | 32    | W      | Data signal of matrixA           |                                                                                    |
++---------------+-----------+--------+-------+--------+----------------------------------+------------------------------------------------------------------------------------+
+
+* REGISTER
++-------------+----------+
+| Interface   | Bitwidth |
++-------------+----------+
+| event_done  | 1        |
+| event_start | 1        |
++-------------+----------+
+
+* TOP LEVEL CONTROL
++-----------+---------------+-----------+
+| Interface | Type          | Ports     |
++-----------+---------------+-----------+
+| ap_clk    | clock         | ap_clk    |
+| ap_rst_n  | reset         | ap_rst_n  |
+| interrupt | interrupt     | interrupt |
+| ap_ctrl   | ap_ctrl_chain |           |
++-----------+---------------+-----------+
+
+
+================================================================
+== SW I/O Information
+================================================================
+* Top Function Arguments
++----------+-----------+----------+
+| Argument | Direction | Datatype |
++----------+-----------+----------+
+| diagSize | in        | int      |
+| matrixA  | inout     | float*   |
++----------+-----------+----------+
+
+* SW-to-HW Mapping
++----------+---------------+-----------+----------+-------------------------------------+
+| Argument | HW Interface  | HW Type   | HW Usage | HW Info                             |
++----------+---------------+-----------+----------+-------------------------------------+
+| diagSize | s_axi_control | register  |          | name=diagSize offset=0x10 range=32  |
+| matrixA  | m_axi_gmem0   | interface |          |                                     |
+| matrixA  | s_axi_control | register  | offset   | name=matrixA_1 offset=0x18 range=32 |
+| matrixA  | s_axi_control | register  | offset   | name=matrixA_2 offset=0x1c range=32 |
++----------+---------------+-----------+----------+-------------------------------------+
+
+
+================================================================
+== M_AXI Burst Information
+================================================================
+ Note: All burst requests might be further partitioned into multiple requests during RTL generation based on max_read_burst_length or max_write_burst_length settings.
+
+* Inferred Burst Summary
++--------------+-----------+----------+-------+---------------------------------------------------------------------------------------------+
+| HW Interface | Direction | Length   | Width | Location                                                                                    |
++--------------+-----------+----------+-------+---------------------------------------------------------------------------------------------+
+| m_axi_gmem0  | read      | variable | 32    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:32:21 |
+| m_axi_gmem0  | write     | variable | 32    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:68:21 |
++--------------+-----------+----------+-------+---------------------------------------------------------------------------------------------+
+
+* Inferred Bursts and Widening Missed
++--------------+----------+-----------------+------------------------------------------------+------------+---------------------------------------------------------------------------------------------+
+| HW Interface | Variable | Loop            | Problem                                        | Resolution | Location                                                                                    |
++--------------+----------+-----------------+------------------------------------------------+------------+---------------------------------------------------------------------------------------------+
+| m_axi_gmem0  | matrixA  | VITIS_LOOP_69_4 | Sequential access length is not divisible by 2 | 214-234    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:69:24 |
+| m_axi_gmem0  | matrixA  | VITIS_LOOP_69_4 | Start index of the access is unaligned         | 214-235    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:69:24 |
+| m_axi_gmem0  | matrixA  | VITIS_LOOP_33_2 | Sequential access length is not divisible by 2 | 214-234    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:33:24 |
+| m_axi_gmem0  | matrixA  | VITIS_LOOP_33_2 | Start index of the access is unaligned         | 214-235    | /home/ywfan/labB_datatype_workspace/cholesky_datatype_kernels/src/cholesky_kernel.cpp:33:24 |
++--------------+----------+-----------------+------------------------------------------------+------------+---------------------------------------------------------------------------------------------+
+
+    * Resolution URL: www.xilinx.com/cgi-bin/docs/rdoc?v=2022.1;t=hls+guidance;d=XXX-YYY.html (replace XXX-YYY with column value)
+
+================================================================
+== Bind Op Report
+================================================================
++-------------------------------------------------------------+-----+--------+------------+-------+---------+---------+
+| Name                                                        | DSP | Pragma | Variable   | Op    | Impl    | Latency |
++-------------------------------------------------------------+-----+--------+------------+-------+---------+---------+
+| + cholesky_kernel                                           | 14  |        |            |       |         |         |
+|   mul_32s_32s_32_2_1_U31                                    | 3   |        | mul_ln32   | mul   | auto    | 1       |
+|   mul_31ns_31ns_62_2_1_U32                                  | 3   |        | mul_ln32_1 | mul   | auto    | 1       |
+|   fsqrt_32ns_32ns_32_12_no_dsp_1_U30                        | -   |        | tmp1       | fsqrt | fabric  | 11      |
+|   sub63_fu_318_p2                                           | -   |        | sub63      | add   | fabric  | 0       |
+|   add_ln54_fu_355_p2                                        | -   |        | add_ln54   | add   | fabric  | 0       |
+|   faddfsub_32ns_32ns_32_7_full_dsp_1_U28                    | 2   |        | sub        | fsub  | fulldsp | 6       |
+|   fsqrt_32ns_32ns_32_12_no_dsp_1_U30                        | -   |        | conv       | fsqrt | fabric  | 11      |
+|   add_ln48_fu_373_p2                                        | -   |        | add_ln48   | add   | fabric  | 0       |
+|   add_ln63_fu_420_p2                                        | -   |        | add_ln63   | add   | fabric  | 0       |
+|   faddfsub_32ns_32ns_32_7_full_dsp_1_U28                    | 2   |        | sub1       | fsub  | fulldsp | 6       |
+|   fdiv_32ns_32ns_32_12_no_dsp_1_U29                         | -   |        | div1       | fdiv  | fabric  | 11      |
+|   add_ln57_fu_391_p2                                        | -   |        | add_ln57   | add   | fabric  | 0       |
+|   add_ln48_1_fu_397_p2                                      | -   |        | add_ln48_1 | add   | fabric  | 0       |
+|   mul_32s_32s_32_2_1_U31                                    | 3   |        | mul_ln68   | mul   | auto    | 1       |
+|   mul_32ns_32ns_62_2_1_U33                                  | 3   |        | mul_ln68_1 | mul   | auto    | 1       |
+|  + cholesky_kernel_Pipeline_VITIS_LOOP_32_1_VITIS_LOOP_33_2 | 0   |        |            |       |         |         |
+|    add_ln32_1_fu_143_p2                                     | -   |        | add_ln32_1 | add   | fabric  | 0       |
+|    add_ln32_fu_175_p2                                       | -   |        | add_ln32   | add   | fabric  | 0       |
+|    add_ln34_fu_213_p2                                       | -   |        | add_ln34   | add   | fabric  | 0       |
+|    add_ln33_fu_219_p2                                       | -   |        | add_ln33   | add   | fabric  | 0       |
+|  + cholesky_kernel_Pipeline_Loop_first_col                  | 0   |        |            |       |         |         |
+|    add_ln43_fu_104_p2                                       | -   |        | add_ln43   | add   | fabric  | 0       |
+|  + cholesky_kernel_Pipeline_Loop_diag                       | 0   |        |            |       |         |         |
+|    add_ln51_fu_109_p2                                       | -   |        | add_ln51   | add   | fabric  | 0       |
+|    add_ln52_fu_119_p2                                       | -   |        | add_ln52   | add   | fabric  | 0       |
+|  + cholesky_kernel_Pipeline_Loop_vec_mul                    | 0   |        |            |       |         |         |
+|    add_ln60_fu_129_p2                                       | -   |        | add_ln60   | add   | fabric  | 0       |
+|    add_ln61_fu_139_p2                                       | -   |        | add_ln61   | add   | fabric  | 0       |
+|    add_ln61_1_fu_150_p2                                     | -   |        | add_ln61_1 | add   | fabric  | 0       |
+|  + cholesky_kernel_Pipeline_VITIS_LOOP_68_3_VITIS_LOOP_69_4 | 0   |        |            |       |         |         |
+|    add_ln68_1_fu_158_p2                                     | -   |        | add_ln68_1 | add   | fabric  | 0       |
+|    add_ln68_fu_167_p2                                       | -   |        | add_ln68   | add   | fabric  | 0       |
+|    add_ln70_fu_205_p2                                       | -   |        | add_ln70   | add   | fabric  | 0       |
+|    add_ln69_fu_211_p2                                       | -   |        | add_ln69   | add   | fabric  | 0       |
++-------------------------------------------------------------+-----+--------+------------+-------+---------+---------+
+
+
+================================================================
+== Bind Storage Report
+================================================================
++-------------------+------+------+--------+----------+---------+------+---------+
+| Name              | BRAM | URAM | Pragma | Variable | Storage | Impl | Latency |
++-------------------+------+------+--------+----------+---------+------+---------+
+| + cholesky_kernel | 16   | 0    |        |          |         |      |         |
+|   dataA_U         | 16   | -    |        | dataA    | ram_s2p | auto | 1       |
++-------------------+------+------+--------+----------+---------+------+---------+
+
+
+================================================================
+== Pragma Report
+================================================================
+* Valid Pragma Syntax
++-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------+
+| Type      | Options                                                                                                                                                                                 | Location                                                  |
++-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------+
+| interface | m_axi offset = slave bundle = gmem0 port = matrixA latency = 64 num_read_outstanding = 16 num_write_outstanding = 16 max_read_burst_length = 64 max_write_burst_length = 64 depth = 256 | ../../../../src/cholesky_kernel.cpp:21 in cholesky_kernel |
+| interface | s_axilite port = diagSize bundle = control                                                                                                                                              | ../../../../src/cholesky_kernel.cpp:25 in cholesky_kernel |
+| interface | s_axilite port = matrixA bundle = control                                                                                                                                               | ../../../../src/cholesky_kernel.cpp:26 in cholesky_kernel |
+| interface | s_axilite port = return bundle = control                                                                                                                                                | ../../../../src/cholesky_kernel.cpp:27 in cholesky_kernel |
++-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------+
+
+
